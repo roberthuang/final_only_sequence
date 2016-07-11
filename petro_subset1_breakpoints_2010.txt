@@ -1,0 +1,40 @@
+{
+	"path"		:	"transformed_petro_subset1_feature.csv",
+	"output"	:	"transformed_petro_subset1_feature_for_sax_testing.csv",
+	"test_setting"	:	"petro_subset1_breakpoints_2010.txt",
+	"attrs"	:
+	[
+		{
+			"attr_name"	:	"BIAS_N_1",
+			"breakpoints"	:
+			[
+				-0.013980088081251818,
+				0.010419661632471508
+			]
+		},
+		{
+			"attr_name"	:	"BIAS_N_2",
+			"breakpoints"	:
+			[
+				-0.013832391073359436,
+				0.008961679044465407
+			]
+		},
+		{
+			"attr_name"	:	"BIAS_N_3",
+			"breakpoints"	:
+			[
+				-0.0019444790451018164,
+				0.0018647472860880887
+			]
+		},
+		{
+			"attr_name"	:	"BIAS_N_4",
+			"breakpoints"	:
+			[
+				-0.023020143360348896,
+				0.020483813454942136
+			]
+		}
+	]
+}

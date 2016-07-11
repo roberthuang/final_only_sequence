@@ -1,0 +1,15 @@
+=== Confusion Matrix ===
+          a      b
+a=Rise   7	18
+b=Down   8	21
+precision_rise: 0.4666666666666667
+recall_rise: 0.28
+precision_down: 0.5384615384615384
+recall_down: 0.7241379310344828
+macro_precision: 0.5025641025641026
+macro_recall: 0.5020689655172415
+macro_f_measure: 0.5023164120256284
+acc: 0.5185185185185185
+applicability: 1.0
+
+

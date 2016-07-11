@@ -1,0 +1,21 @@
+java -jar C:\\user\\workspace\\final_only_sequence\\final0.jar "C:\\user\\workspace\\final_only_sequence\\petro_subset1_2010_rate.csv" "C:\\user\\workspace\\final_only_sequence\\preprocessing\\" "C:\\user\\workspace\\final_only_sequence\\data\\"  7 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

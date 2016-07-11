@@ -1,0 +1,25 @@
+{
+	"path"		:	"transformed_petro_subset1_feature.csv",
+	"output"	:	"transformed_petro_subset1_feature_for_sax_training.csv",
+	"test_setting"	:	"C:\\user\\workspace\\final_only_sequence\\petro_subset1_breakpoints_2010.txt",
+	"attrs"		:
+	[
+		{
+			"attr_name"		:	"BIAS_N_1",
+			"num_category"	:	3
+		}
+		{
+			"attr_name"		:	"BIAS_N_2",
+			"num_category"	:	3
+		}
+
+		{
+			"attr_name"		:	"BIAS_N_3",
+			"num_category"	:	3
+		}
+		{
+			"attr_name"		:	"BIAS_N_4",
+			"num_category"	:	3
+		}		
+	]
+}
