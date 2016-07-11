@@ -165,6 +165,8 @@ public class wekaTest {
             	    }
             	    
             	    //Evaluate Criteria
+            	    int test_size = (test.numInstances()-2);
+                    int size = True_Negative +  True_Positive + False_Positive + False_Negative;
             	    //Rise
             	    double precision_rise = 0;
                     if (True_Positive == 0 ) {        	
@@ -173,7 +175,7 @@ public class wekaTest {
                     	precision_rise =  True_Positive / (double)(True_Positive + False_Positive);                      
                     }       
             	    
-                    double recall_rise =  True_Positive / (double)(True_Positive + False_Negative);
+                    double recall_rise =  True_Positive / (double)test_size;
                     
                     //Down                   
                     double precision_down = 0;
@@ -182,13 +184,13 @@ public class wekaTest {
                     } else {
                     	precision_down =  True_Negative / (double)(True_Negative +  False_Negative);                       
                     }     
-                    int size = True_Negative +  True_Positive + False_Positive + False_Negative;
+                  
                     double acc =  (True_Positive + True_Negative)/ (double)(size);
-                    double recall_down =  True_Negative / (double)(True_Negative + False_Positive);                    
+                    double recall_down =  True_Negative / (double) (test_size);                    
                     double macro_precision = ( precision_rise + precision_down) / (double) 2;
                     double macro_recall = ( recall_rise + recall_down) / (double) 2;
                     double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
-                    double applicability = avaliable_count / (double) (test.numInstances()-2);
+                    double applicability = avaliable_count / (double) (test_size);
                 	File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
              	    FileOutputStream fos = new FileOutputStream(fout);
                     OutputStreamWriter osw = new OutputStreamWriter(fos);            	
