@@ -175,7 +175,7 @@ public class wekaTest {
                     	precision_rise =  True_Positive / (double)(True_Positive + False_Positive);                      
                     }       
             	    
-                    double recall_rise =  True_Positive / (double)test_size;
+                    double recall_rise =  True_Positive / (double) size;
                     
                     //Down                   
                     double precision_down = 0;
@@ -186,7 +186,7 @@ public class wekaTest {
                     }     
                   
                     double acc =  (True_Positive + True_Negative)/ (double)(size);
-                    double recall_down =  True_Negative / (double) (test_size);                    
+                    double recall_down =  True_Negative / (double) size;                    
                     double macro_precision = ( precision_rise + precision_down) / (double) 2;
                     double macro_recall = ( recall_rise + recall_down) / (double) 2;
                     double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
