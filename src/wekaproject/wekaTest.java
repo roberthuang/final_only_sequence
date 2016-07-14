@@ -175,7 +175,7 @@ public class wekaTest {
                     	precision_rise =  True_Positive / (double)(True_Positive + False_Positive);                      
                     }       
             	    
-                    double recall_rise =  True_Positive / (double) size;
+                    double recall_rise =  True_Positive / (double) (True_Positive + False_Negative);
                     
                     //Down                   
                     double precision_down = 0;
@@ -186,7 +186,7 @@ public class wekaTest {
                     }     
                   
                     double acc =  (True_Positive + True_Negative)/ (double)(size);
-                    double recall_down =  True_Negative / (double) size;                    
+                    double recall_down =  True_Negative / (double) (True_Negative + False_Positive);                    
                     double macro_precision = ( precision_rise + precision_down) / (double) 2;
                     double macro_recall = ( recall_rise + recall_down) / (double) 2;
                     double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
@@ -446,7 +446,7 @@ public class wekaTest {
         System.out.println("Done for Sequence(Testing)!");
        
 			
-        for (minsup = 142; minsup <= 142; minsup++) {
+        for (minsup = 159; minsup <= 159; minsup++) {
 	    /**Sequential Pattern Mining**/
         sequential_pattern_mining(minsup);
         
