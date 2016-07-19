@@ -828,59 +828,220 @@ public class GetAttr {
     	
     }
     
-    public static HashMap<Integer, String> featureExtraction_target_user_defined(ArrayList<ArrayList<String>> records) {
+    public static  HashMap<Integer, String> featureExtraction_target_user_defined(ArrayList<ArrayList<String>> records) throws FileNotFoundException {
+    	
+    	
     	HashMap<Integer, String> result = new HashMap<>();
-    	int training_data_size = (int)((records.size()-1)*0.8);
+    	
+    	int debug = 0;
+    	if (debug == 1) {
+    	ArrayList<ArrayList<String>> result_train_1 = new ArrayList<>();
+    	ArrayList<ArrayList<String>> result_train_2 = new ArrayList<>();
+    	int training_data_size = (int)((records.size() - 1)*0.8);
     	int index_of_target_att = records.get(0).size()-1;
     	int r = 0, r_h = 0, d = 0, d_h = 0;
     	int five_per_rise_large = 0;
 	    int five_per_rise_small = 0;
 	    int five_per_fall_large = 0;
 	    int five_per_fall_small = 0;
-    	//for (int i = 1; i < records.size(); i++) {
-    	for (int i = 1; i < records.size(); i++) {
+        int train_size = (int)((records.size()*0.8)-1);
+        
+        
+        ArrayList<String> temp_train_2 = new ArrayList<>();
+        temp_train_2.add("Feature");
+    	result_train_2.add(temp_train_2);
+    	for (int i = 0; i <= train_size; i++) {
+    		if (i==0) {  
+    			ArrayList<String> temp = new ArrayList<>();
+    	    	temp.add("Feature");
+    	    	result_train_1.add(temp);
+    	    	continue;
+    	    }
     	    if (i==1) {  
-    	    	result.put(i, "None_Rise");
+    	    	ArrayList<String> temp = new ArrayList<>();
+    	    	temp.add(String.valueOf(0));
+    	    	result_train_1.add(temp);
     	    	continue;
     	    }
     	    
     	    double price_now = Double.parseDouble(records.get(i).get(index_of_target_att));
     	    double price_pre = Double.parseDouble(records.get(i-1).get(index_of_target_att));
-    	    double price_per = (price_now-price_pre) / (double) price_pre;
+    	    double price_per = price_now-price_pre;
     	    
-    	    if (price_per < 0) {
-    	    	if (Math.abs(price_per) > 0.05) {
-    	    		five_per_fall_large++;	
-    	    		result.put(i, "fall_large");
-    	    	} else {
-    	    		five_per_fall_small++;
-    	    		result.put(i, "fall_small");
-    	    	}
-    	    } else if (price_per == 0) {
-    	    	five_per_rise_small++;	
-    	    	result.put(i, "rise_small");
+    	    if (price_per > 0) {
+    	    	ArrayList<String> temp = new ArrayList<>();
+    	    	temp.add(String.valueOf(price_per));
+    	    	result_train_1.add(temp);
     	    } else {
-    	    	if (Math.abs(price_per) > 0.05) {
-    	    		five_per_rise_large++;	
-    	    		result.put(i, "rise_large");
-    	    	} else {
-    	    		five_per_rise_small++;
-    	    		result.put(i, "rise_small");
-    	    	}
+    	    	ArrayList<String> temp = new ArrayList<>();
+    	    	temp.add(String.valueOf(price_per));
+    	    	result_train_2.add(temp);
     	    }
-    	    
-    	    
-    	    //result.put(i, String.valueOf(price_per));	
+   
     	}   
     	
-    	System.out.println("fall_large: " + five_per_fall_large);
-	    System.out.println("fall_small: " + five_per_fall_small);
-	    System.out.println("rise_large: " + five_per_rise_large);
-	    System.out.println("rise_small: " + five_per_rise_small);
-    	return result;  
+    	try {
+    		writeCSV("", "result_train_1.csv",result_train_1);
+    	} catch (IOException e) {
+    		System.out.println("[ERROR] I/O Exception.");
+    		e.printStackTrace();
+    	}
+    	try {
+    		writeCSV("", "result_train_2.csv",result_train_2);
+    	} catch (IOException e) {
+    		System.out.println("[ERROR] I/O Exception.");
+    		e.printStackTrace();
+    	}
+    	ArrayList<ArrayList<String>> result_test_1 = new ArrayList<>();
+    	ArrayList<ArrayList<String>> result_test_2 = new ArrayList<>();
+    	ArrayList<String> temp1 = new ArrayList<>();
+    	temp1.add("Feature");
+    	result_test_1.add(temp1);
+    	
+    	ArrayList<String> temp2 = new ArrayList<>();
+    	temp2.add("Feature");
+    	result_test_2.add(temp2);
+  
+    	for (int i = train_size + 1; i < records.size(); i++) {
+    		
+    	    if (i==train_size + 1) {  
+    	    	ArrayList<String> temp = new ArrayList<>();
+    	    	temp.add(String.valueOf(0));
+    	    	result_test_1.add(temp);
+    	    	continue;
+    	    }
+    	    
+    	    double price_now = Double.parseDouble(records.get(i).get(index_of_target_att));
+    	    double price_pre = Double.parseDouble(records.get(i-1).get(index_of_target_att));
+    	    double price_per = price_now-price_pre;
+    	    
+    	    if (price_per > 0) {
+    	    	ArrayList<String> temp = new ArrayList<>();
+    	    	temp.add(String.valueOf(price_per));
+    	    	result_test_1.add(temp);
+    	    } else {
+    	    	ArrayList<String> temp = new ArrayList<>();
+    	    	temp.add(String.valueOf(price_per));
+    	    	result_test_2.add(temp);
+    	    }
+   
+    	}   
+    	
+    	try {
+    		writeCSV("", "result_test_1.csv",result_test_1);
+    	} catch (IOException e) {
+    		System.out.println("[ERROR] I/O Exception.");
+    		e.printStackTrace();
+    	}
+    	try {
+    		writeCSV("", "result_test_2.csv",result_test_2);
+    	} catch (IOException e) {
+    		System.out.println("[ERROR] I/O Exception.");
+    		e.printStackTrace();
+    	}
+    	
+    	} else {
+    		
+    		int index_of_target_att = records.get(0).size()-1;
+    		int train_size = (int)((records.size()*0.8)-1);
+    		
+    		//對於訓練資料的索引
+    		int result_train1_for_training_index = 1;
+    		int result_train2_for_training_index = 1;
+    		for (int i = 0; i <= train_size; i++) {
+        		if (i==0) {  
+        			result.put(0, "Target");
+        	    	continue;
+        	    }
+        	    if (i==1) {  
+        	    	result.put(i, "Down_1");
+        	    	continue;
+        	    }
+        	    
+        	    double price_now = Double.parseDouble(records.get(i).get(index_of_target_att));
+        	    double price_pre = Double.parseDouble(records.get(i-1).get(index_of_target_att));
+        	    double price_per = price_now-price_pre;
+        	    
+        	    
+        	    ArrayList<ArrayList<String>> result_train1_for_training = readCSV("result_train1_for_training.csv");
+        	    ArrayList<ArrayList<String>> result_train2_for_training = readCSV("result_train2_for_training.csv");
+
+        	    if (price_per > 0) {
+        	    	if (result_train1_for_training.get(result_train1_for_training_index).get(0) == "Feature_1") {
+        	    		result.put(i, "Rise_1");	
+
+        	    	} else {
+        	    		result.put(i, "Rise_2");	
+        	    	
+        	    	}
+        	    	result_train1_for_training_index++;
+        	    	
+        	    } else {        	    	
+        	    	if (result_train2_for_training.get(result_train2_for_training_index).get(0).equals("Feature_1")) {
+        	    		result.put(i, "Down_1");	
+        	    	} else {
+        	    		result.put(i, "Down_2");	
+        	    	}
+        	    	result_train2_for_training_index++;   	
+        	    }      
+        	}   
+    		//對於測試資料的索引
+    		int result_test1_for_testing_index = 1;
+    		int result_test2_for_testing_index = 1;
+    		
+    		for (int i = train_size + 1; i < records.size(); i++) {
+        		
+        	    if (i==train_size + 1) {  
+        	    	result.put(i, "Down_1");
+        	    	continue;
+        	    }
+        	    
+        	    double price_now = Double.parseDouble(records.get(i).get(index_of_target_att));
+        	    double price_pre = Double.parseDouble(records.get(i-1).get(index_of_target_att));
+        	    double price_per = price_now-price_pre;
+
+        	    ArrayList<ArrayList<String>> result_test1_for_testing = readCSV("result_test1_for_testing.csv");
+        	    ArrayList<ArrayList<String>> result_test2_for_testing = readCSV("result_test2_for_testing.csv");
+        	    
+        	    if (price_per > 0) {
+        	    	if (result_test1_for_testing.get(result_test1_for_testing_index).get(0).equals("Feature_1")) {
+        	    		result.put(i, "Rise_1");	
+        	    	} else {
+        	    		result.put(i, "Rise_2");	
+        	    	}
+        	    	result_test1_for_testing_index++;
+        	    } else {
+        	    	if (result_test2_for_testing.get(result_test2_for_testing_index).get(0).equals("Feature_1")) {
+        	    		result.put(i, "Down_1");	
+        	    	} else {
+        	    		result.put(i, "Down_2");	
+        	    	}
+        	    	result_test2_for_testing_index++;
+        	    }
+       
+        	}          	    		
+    		
+    		
+    	}
+		return result;
+    	
     	
     }
-           
+    static ArrayList<ArrayList<String>> readCSV(String fullpath) throws FileNotFoundException{
+        ArrayList<ArrayList<String>> records = new ArrayList<>();
+	    File inputFile = new File(fullpath);
+	    Scanner scl = new Scanner(inputFile);
+	    while(scl.hasNextLine()){
+		    ArrayList<String> newRecord = new ArrayList<>();
+		    String[] tokens = scl.nextLine().split(",");
+		    for(String token : tokens){
+			    newRecord.add(token);
+		    }
+		    records.add(newRecord);
+	    }
+	    scl.close();		
+	    return records; 
+    }   
     public static HashMap<Integer, String> MACD(int tl, int sl, int ll, String att, ArrayList<ArrayList<String>> records) {
     	HashMap<Integer, String> result = new HashMap<>(); 
     	for (int i = 1; i < records.size(); i++) {

@@ -106,7 +106,9 @@ public class SAXTransformation_Testing {
 			
 			//System.out.print("Transforming...");
 			//2. Transform each attribute (whose flag = 1) into category attribute by SAX
+			//為了目標屬性 所以有做修改
 			for(int r=training_data+1;r<records.size();r++){
+//			for(int r=1;r<records.size();r++){
 				ArrayList<String> curRecord = records.get(r);
 				for(int c=0;c<Num_Attrs;c++){
 					if(!attrSettings.containsKey(attrs.get(c))) continue;

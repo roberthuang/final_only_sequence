@@ -152,9 +152,10 @@ public class SAXTransformation {
 			//System.out.print("Transforming...");
 			
 			//5. Transform each attribute (whose flag = 1) into category attribute by SAX
-			
+			//為了目標屬性 有做修改
 			int traing_data = (int)((records.size()-1)*0.8);
 			for(int r=1;r<=traing_data;r++){
+//			for(int r=1;r< records.size();r++){
 				ArrayList<String> curRecord = records.get(r);
 				for(int c=0;c<Num_Attrs;c++){
 					if(!attrSettings.containsKey(attrs.get(c))) continue;
@@ -192,7 +193,6 @@ public class SAXTransformation {
 			System.out.println("[ERROR] I/O Exception.");
 			e.printStackTrace();
 		}
-		//System.out.println("===================================================\n");
 	}
 	
 	static void initialize(){
@@ -261,8 +261,10 @@ public class SAXTransformation {
 		outputFW.close();
 	}
 	
-	//Modify for testing data
+
 	static void writeTestingSettings(String filename, ArrayList<String> attrs, HashMap<String, AttributeSetting> attrSettings, double[][] breakpoint_values){
+		int debug = 0;
+		if (debug == 0) {
 		//The output file for testing settings is in json format
 		File outputfile = new File(filename);
 		if(!outputfile.getParentFile().exists()) outputfile.getParentFile().mkdirs();
@@ -293,6 +295,41 @@ public class SAXTransformation {
 		} catch (IOException e) {
 			System.out.println("[Error] I/O Exception.");
 			e.printStackTrace();
+		}
+		} else {
+			//The output file for testing settings is in json format
+			File outputfile = new File(filename);
+			if(!outputfile.getParentFile().exists()) outputfile.getParentFile().mkdirs();
+			try {
+				FileWriter fw = new FileWriter(outputfile);
+				fw.write("{\r\n\t\"path\"\t\t:\t\"result_test_2.csv\",");
+				fw.write("\r\n\t\"output\"\t:\t\"result_train2_for_testing.csv\",");
+				fw.write("\r\n\t\"test_setting\"\t:\t\"breakpoint_target_2.txt\",");
+				fw.write("\r\n\t\"attrs\"\t:\r\n\t[");
+				boolean first = true;
+				for(int i=0;i<attrs.size();i++){
+					if(!attrSettings.containsKey(attrs.get(i))) continue;
+					if(!first) fw.write(",");
+					else first = false;
+					fw.write("\r\n\t\t{\r\n\t\t\t\"attr_name\"\t:\t\"" + attrs.get(i) + "\","
+							+ "\r\n\t\t\t\"breakpoints\"\t:\r\n\t\t\t[");
+					boolean first_breakpoint = true;
+					for(int j=0;j<attrSettings.get(attrs.get(i)).numCategory-1;j++){
+						if(!first_breakpoint) fw.write(",");
+						else first_breakpoint = false;
+						fw.write("\r\n\t\t\t\t" + breakpoint_values[i][j]);
+					}
+					fw.write("\r\n\t\t\t]\r\n\t\t}");
+				}
+				fw.write("\r\n\t]\r\n}");
+				fw.flush();
+				fw.close();
+			} catch (IOException e) {
+				System.out.println("[Error] I/O Exception.");
+				e.printStackTrace();
+			}
+			
+			
 		}
 	}
 }

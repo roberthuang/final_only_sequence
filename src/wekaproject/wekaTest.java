@@ -403,7 +403,7 @@ public class wekaTest {
 		int MA_Relative = 0;
 		int MA_N = 0;
         int MA_Diff = 0;
-		int user_defined_class = 0;
+		int user_defined_class = 1;
         int minsup = 0;
         
         if (args.length < 4) {
@@ -422,15 +422,23 @@ public class wekaTest {
 	    HashMap<Integer, String> feature_target = new HashMap<>();	    
 	    if (user_defined_class == 1) {
 	    	feature_target = GetAttr.featureExtraction_target_user_defined(records);
+//	    	for (Integer index : feature_target.keySet()) {
+//	    		System.out.println(index + ", " + feature_target.get(index));
+//	    	}
 	    } else {
 	    	feature_target = GetAttr.featureExtraction_target(records);
 	    }  
-	   
+//	    SAXTransformation.start("target1.txt");
+//		SAXTransformation_Testing.start("breakpoint_target_1.txt");
+
+//		SAXTransformation.start("target2.txt");
+//		SAXTransformation_Testing.start("breakpoint_target_2.txt");
+	    int debug = 1;
+		if (debug == 0) {
 	    //¥ý¨úBIAS»PMA
 	    String output = "transformed_petro_subset1_feature.csv";
 		GetAttr.featureExtraction_N(output, records, feature_target, period);	
-		int debug = 0;
-		if (debug == 0) {
+		
 		/**SAX for BIAS**/
 		SAXTransformation.start("SAXTransformation_config_petro_subset1_2010.txt");
 		SAXTransformation_Testing.start("petro_subset1_breakpoints_2010.txt");
@@ -446,7 +454,7 @@ public class wekaTest {
         System.out.println("Done for Sequence(Testing)!");
        
 			
-        for (minsup = 159; minsup <= 159; minsup++) {
+        for (minsup = 192; minsup <= 192; minsup++) {
 	    /**Sequential Pattern Mining**/
         sequential_pattern_mining(minsup);
         
