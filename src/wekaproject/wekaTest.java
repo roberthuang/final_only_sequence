@@ -115,6 +115,10 @@ public class wekaTest {
     	        int False_Down1 = 0;
     	        int False_Down2 = 0;   
     	        
+    	        int Real_Rise1 = 0;
+    	        int Real_Rise2 = 0;    	        
+    	        int Real_Down1 = 0;
+    	        int Real_Down2 = 0;
     			int avaliable_count = 0;
     			
             	try {        	
@@ -152,6 +156,17 @@ public class wekaTest {
             	    	if (none_zero == false) {
             	    		continue;
             	    	} else {
+            	    		if (class_two == 0) {
+            	    			if (actual.equals("Rise_1")) {
+            	    				Real_Rise1++;	
+            	    			} else if (actual.equals("Rise_2")) {
+            	    				Real_Rise2++;		
+            	    			} else if (actual.equals("Down_1")) {
+            	    				Real_Down1++;
+            	    			} else if (actual.equals("Down_2")) {
+            	    				Real_Down2++;
+            	    			}
+            	    		} 
             	    	    avaliable_count++;
             	    	}
 
@@ -207,52 +222,136 @@ public class wekaTest {
             	    }
             	    
             	    //Evaluate Criteria
-            	    int test_size = (test.numInstances()-2);
-                    int size = True_Negative +  True_Positive + False_Positive + False_Negative;
-            	    //Rise
-            	    double precision_rise = 0;
-                    if (True_Positive == 0 ) {        	
-                    	precision_rise = 0;
-                    } else {
-                    	precision_rise =  True_Positive / (double)(True_Positive + False_Positive);                      
-                    }       
-            	    
-                    double recall_rise =  True_Positive / (double) (True_Positive + False_Negative);
-                    
-                    //Down                   
-                    double precision_down = 0;
-                    if (True_Negative == 0 ) {        	
-                    	precision_down = 0;
-                    } else {
-                    	precision_down =  True_Negative / (double)(True_Negative +  False_Negative);                       
-                    }     
-                  
-                    double acc =  (True_Positive + True_Negative)/ (double)(size);
-                    double recall_down =  True_Negative / (double) (True_Negative + False_Positive);                    
-                    double macro_precision = ( precision_rise + precision_down) / (double) 2;
-                    double macro_recall = ( recall_rise + recall_down) / (double) 2;
-                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
-                    double applicability = avaliable_count / (double) (test_size);
-                	File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
-             	    FileOutputStream fos = new FileOutputStream(fout);
-                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
+            	    if (class_two == 1) {
+	            	    int test_size = (test.numInstances()-2);
+	                    int size = True_Negative +  True_Positive + False_Positive + False_Negative;
+	            	    //Rise
+	            	    double precision_rise = 0;
+	                    if (True_Positive == 0 ) {        	
+	                    	precision_rise = 0;
+	                    } else {
+	                    	precision_rise =  True_Positive / (double)(True_Positive + False_Positive);                      
+	                    }       
+	            	    
+	                    double recall_rise =  True_Positive / (double) (True_Positive + False_Negative);
+	                    
+	                    //Down                   
+	                    double precision_down = 0;
+	                    if (True_Negative == 0 ) {        	
+	                    	precision_down = 0;
+	                    } else {
+	                    	precision_down =  True_Negative / (double)(True_Negative +  False_Negative);                       
+	                    }     
+	                  
+	                    double acc =  (True_Positive + True_Negative)/ (double)(size);
+	                    double recall_down =  True_Negative / (double) (True_Negative + False_Positive);                    
+	                    double macro_precision = ( precision_rise + precision_down) / (double) 2;
+	                    double macro_recall = ( recall_rise + recall_down) / (double) 2;
+	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
+	                    double applicability = avaliable_count / (double) (test_size);
+	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
+	             	    FileOutputStream fos = new FileOutputStream(fout);
+	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
 
-            		osw.write("=== Confusion Matrix ===\r\n");
-            		osw.write("          a      b\r\n");
-            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
-           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
-            		osw.write("precision_rise: " + precision_rise+ "\r\n");
-            		osw.write("recall_rise: " + recall_rise + "\r\n");
-            		osw.write("precision_down: " + precision_down+ "\r\n");
-           		    osw.write("recall_down: " + recall_down + "\r\n");
-                    osw.write("macro_precision: " + macro_precision+ "\r\n");
-                    osw.write("macro_recall: " + macro_recall+ "\r\n");
-                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
-            		osw.write("acc: "               + acc+ "\r\n");
-            		osw.write("applicability: "               +applicability+ "\r\n");
-            		osw.write("\r\n");
-            		osw.write("\r\n");
-    		        osw.close();
+	            		osw.write("=== Confusion Matrix ===\r\n");
+	            		osw.write("          a      b\r\n");
+	            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
+	           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
+	            		osw.write("precision_rise: " + precision_rise+ "\r\n");
+	            		osw.write("recall_rise: " + recall_rise + "\r\n");
+	            		osw.write("precision_down: " + precision_down+ "\r\n");
+	           		    osw.write("recall_down: " + recall_down + "\r\n");
+	                    osw.write("macro_precision: " + macro_precision+ "\r\n");
+	                    osw.write("macro_recall: " + macro_recall+ "\r\n");
+	                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
+	            		osw.write("acc: "               + acc+ "\r\n");
+	            		osw.write("applicability: "               +applicability+ "\r\n");
+	            		osw.write("\r\n");
+	            		osw.write("\r\n");
+	    		        osw.close();
+	    		        
+            	    } else {
+            	    	int test_size = (test.numInstances()-2);
+	                    int size = True_Rise1 +  True_Rise2 + True_Down1 + True_Down2 +  False_Rise1 +  False_Rise2 + False_Down1 + False_Down2;
+	            	    //Rise
+	                    //Precision & Recall
+	            	    double precision_Rise1 = 0;	            	  
+	                    if (True_Rise1 == 0 ) {        	
+	                    	precision_Rise1 = 0;
+	                    } else {
+	                    	precision_Rise1 =  True_Rise1 / (double)(True_Rise1+ False_Rise1);                      
+	                    }     
+	                    double recall_Rise1 =  True_Rise1 / (double) Real_Rise1;
+	                   
+	                    //Precision & Recall
+	            	    double precision_Rise2 = 0;	            	  
+	                    if (True_Rise2 == 0 ) {        	
+	                    	precision_Rise2 = 0;
+	                    } else {
+	                    	precision_Rise2 =  True_Rise2 / (double)(True_Rise2+ False_Rise2);                      
+	                    }     
+	                    double recall_Rise2 =  True_Rise2 / (double) Real_Rise2;
+
+	                    //Precision & Recall
+	            	    double precision_Down1 = 0;	            	  
+	                    if (True_Down1 == 0 ) {        	
+	                    	precision_Down1 = 0;
+	                    } else {
+	                    	precision_Down1 =  True_Down1 / (double)(True_Down1+ False_Down1);                      
+	                    }     
+	                    double recall_Down1 =  True_Down1 / (double) Real_Down1;
+	                    
+	                    //Precision & Recall
+	            	    double precision_Down2 = 0;	            	  
+	                    if (True_Down1 == 0 ) {        	
+	                    	precision_Down2 = 0;
+	                    } else {
+	                    	precision_Down2 =  True_Down2 / (double)(True_Down2 + False_Down2);                      
+	                    }     
+	                    double recall_Down2 =  True_Down2 / (double) Real_Down2;
+	                    
+	            	    
+	                    	                
+	                  
+	                    double acc =  (True_Rise1 + True_Rise2 +True_Down1 +True_Down2)/ (double)(size);
+              
+	                    double macro_precision = ( precision_Rise1+ precision_Rise2 + precision_Down1 + precision_Down2) / (double) 4;
+	                    double macro_recall = ( recall_Rise1+ recall_Rise2 + recall_Down1+ recall_Down2) / (double) 4;
+	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
+	                    double applicability = avaliable_count / (double) (test_size);
+                    
+	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
+	             	    FileOutputStream fos = new FileOutputStream(fout);
+	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
+
+	            		osw.write("=== Confusion Matrix ===\r\n");
+	            		osw.write("          a      b\r\n");
+	            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
+	           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
+	            		osw.write("precision_Rise1: " + precision_Rise1+ "\r\n");
+	            		osw.write("precision_Rise2: " + precision_Rise2+ "\r\n");
+	            		osw.write("precision_Down1: " + precision_Down1+ "\r\n");
+	            		osw.write("precision_Down2: " + precision_Down2+ "\r\n");
+	            		osw.write("recall_Rise1: " + recall_Rise1 + "\r\n");
+	            		osw.write("recall_Rise2: " + recall_Rise2 + "\r\n");
+	            		osw.write("recall_Down1: " + recall_Down1 + "\r\n");
+	            		osw.write("recall_Down2: " + recall_Down2 + "\r\n");
+	            		
+	                    osw.write("macro_precision: " + macro_precision+ "\r\n");
+	                    osw.write("macro_recall: " + macro_recall+ "\r\n");
+	                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
+	            		osw.write("acc: "               + acc+ "\r\n");
+	            		osw.write("applicability: "               +applicability+ "\r\n");
+	            		osw.write("\r\n");
+	            		osw.write("\r\n");
+	    		        osw.close();           	    	
+            	    	
+            	    } // end if class_two
+                    
+                    
+                    
+                    
+                	
     		        
             	}catch (IOException e) {
     	        	System.out.println("[ERROR] I/O Exception.");
@@ -285,9 +384,13 @@ public class wekaTest {
         	        int False_Rise2 = 0;     
         	        int False_Down1 = 0;
         	        int False_Down2 = 0;   
-        			
+        	        
+        	        int Real_Rise1 = 0;
+        	        int Real_Rise2 = 0;    	        
+        	        int Real_Down1 = 0;
+        	        int Real_Down2 = 0;
         			int avaliable_count = 0;
-        			
+
                 	//Build classifier
             	    models[j].buildClassifier(train);
             	                	    
@@ -318,6 +421,17 @@ public class wekaTest {
             	    	if (none_zero == false) {
             	    		continue;
             	    	} else {
+            	    		if (class_two == 0) {
+            	    			if (actual.equals("Rise_1")) {
+            	    				Real_Rise1++;	
+            	    			} else if (actual.equals("Rise_2")) {
+            	    				Real_Rise2++;		
+            	    			} else if (actual.equals("Down_1")) {
+            	    				Real_Down1++;
+            	    			} else if (actual.equals("Down_2")) {
+            	    				Real_Down2++;
+            	    			}
+            	    		}             	    		
             	    	    avaliable_count++;
             	    	}
 
@@ -372,51 +486,131 @@ public class wekaTest {
             	    	System.out.println(actual + ", " + predString);
             	    }
             	    //Evaluate Criteria
-            	    //Rise
-            	    double precision_rise = 0;
-                    if (True_Positive == 0 ) {        	
-                    	precision_rise = 0;
-                    } else {
-                    	precision_rise =  True_Positive / (double)(True_Positive + False_Positive);                      
-                    }       
-            	    
-                    double recall_rise =  True_Positive / (double)(True_Positive + False_Negative);
-                    
-                    //Down                   
-                    double precision_down = 0;
-                    if (True_Negative == 0 ) {        	
-                    	precision_down = 0;
-                    } else {
-                    	precision_down =  True_Negative / (double)(True_Negative +  False_Negative);                       
-                    }     
-                    int size = True_Negative +  True_Positive + False_Positive + False_Negative;
-                    double acc =  (True_Positive + True_Negative)/ (double)(size);
-                    double recall_down =  True_Negative / (double)(True_Negative + False_Positive);                    
-                    double macro_precision = ( precision_rise + precision_down) / (double) 2;
-                    double macro_recall = ( recall_rise + recall_down) / (double) 2;
-                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
-                    double applicability = avaliable_count / (double) (test.numInstances()-2);
-                	File fout = new File(output_path + "DT_"+ period + "_" + minsup +".arff");                	
-             	    FileOutputStream fos = new FileOutputStream(fout);
-                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
+            	    if (class_two == 1) {
+	            	    int test_size = (test.numInstances()-2);
+	                    int size = True_Negative +  True_Positive + False_Positive + False_Negative;
+	            	    //Rise
+	            	    double precision_rise = 0;
+	                    if (True_Positive == 0 ) {        	
+	                    	precision_rise = 0;
+	                    } else {
+	                    	precision_rise =  True_Positive / (double)(True_Positive + False_Positive);                      
+	                    }       
+	            	    
+	                    double recall_rise =  True_Positive / (double) (True_Positive + False_Negative);
+	                    
+	                    //Down                   
+	                    double precision_down = 0;
+	                    if (True_Negative == 0 ) {        	
+	                    	precision_down = 0;
+	                    } else {
+	                    	precision_down =  True_Negative / (double)(True_Negative +  False_Negative);                       
+	                    }     
+	                  
+	                    double acc =  (True_Positive + True_Negative)/ (double)(size);
+	                    double recall_down =  True_Negative / (double) (True_Negative + False_Positive);                    
+	                    double macro_precision = ( precision_rise + precision_down) / (double) 2;
+	                    double macro_recall = ( recall_rise + recall_down) / (double) 2;
+	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
+	                    double applicability = avaliable_count / (double) (test_size);
+	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
+	             	    FileOutputStream fos = new FileOutputStream(fout);
+	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
 
-            		osw.write("=== Confusion Matrix ===\r\n");
-            		osw.write("          a      b\r\n");
-            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
-           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
-            		osw.write("precision_rise: " + precision_rise+ "\r\n");
-            		osw.write("recall_rise: " + recall_rise + "\r\n");
-            		osw.write("precision_down: " + precision_down+ "\r\n");
-           		    osw.write("recall_down: " + recall_down + "\r\n");
-                    osw.write("macro_precision: " + macro_precision+ "\r\n");
-                    osw.write("macro_recall: " + macro_recall+ "\r\n");
-                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
-            		osw.write("acc: "               + acc+ "\r\n");
-            		osw.write("applicability: "               +applicability+ "\r\n");
-            		osw.write("\r\n");
-            		osw.write("\r\n");
-    		        osw.close();
-    		        
+	            		osw.write("=== Confusion Matrix ===\r\n");
+	            		osw.write("          a      b\r\n");
+	            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
+	           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
+	            		osw.write("precision_rise: " + precision_rise+ "\r\n");
+	            		osw.write("recall_rise: " + recall_rise + "\r\n");
+	            		osw.write("precision_down: " + precision_down+ "\r\n");
+	           		    osw.write("recall_down: " + recall_down + "\r\n");
+	                    osw.write("macro_precision: " + macro_precision+ "\r\n");
+	                    osw.write("macro_recall: " + macro_recall+ "\r\n");
+	                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
+	            		osw.write("acc: "               + acc+ "\r\n");
+	            		osw.write("applicability: "               +applicability+ "\r\n");
+	            		osw.write("\r\n");
+	            		osw.write("\r\n");
+	    		        osw.close();
+	    		        
+            	    } else {
+            	    	int test_size = (test.numInstances()-2);
+	                    int size = True_Rise1 +  True_Rise2 + True_Down1 + True_Down2 +  False_Rise1 +  False_Rise2 + False_Down1 + False_Down2;
+	            	    //Rise
+	                    //Precision & Recall
+	            	    double precision_Rise1 = 0;	            	  
+	                    if (True_Rise1 == 0 ) {        	
+	                    	precision_Rise1 = 0;
+	                    } else {
+	                    	precision_Rise1 =  True_Rise1 / (double)(True_Rise1+ False_Rise1);                      
+	                    }     
+	                    double recall_Rise1 =  True_Rise1 / (double) Real_Rise1;
+	                   
+	                    //Precision & Recall
+	            	    double precision_Rise2 = 0;	            	  
+	                    if (True_Rise2 == 0 ) {        	
+	                    	precision_Rise2 = 0;
+	                    } else {
+	                    	precision_Rise2 =  True_Rise2 / (double)(True_Rise2+ False_Rise2);                      
+	                    }     
+	                    double recall_Rise2 =  True_Rise2 / (double) Real_Rise2;
+
+	                    //Precision & Recall
+	            	    double precision_Down1 = 0;	            	  
+	                    if (True_Down1 == 0 ) {        	
+	                    	precision_Down1 = 0;
+	                    } else {
+	                    	precision_Down1 =  True_Down1 / (double)(True_Down1+ False_Down1);                      
+	                    }     
+	                    double recall_Down1 =  True_Down1 / (double) Real_Down1;
+	                    
+	                    //Precision & Recall
+	            	    double precision_Down2 = 0;	            	  
+	                    if (True_Down1 == 0 ) {        	
+	                    	precision_Down2 = 0;
+	                    } else {
+	                    	precision_Down2 =  True_Down2 / (double)(True_Down2 + False_Down2);                      
+	                    }     
+	                    double recall_Down2 =  True_Down2 / (double) Real_Down2;
+	                    
+	            	    
+	                    	                
+	                  
+	                    double acc =  (True_Rise1 + True_Rise2 +True_Down1 +True_Down2)/ (double)(size);
+              
+	                    double macro_precision = ( precision_Rise1+ precision_Rise2 + precision_Down1 + precision_Down2) / (double) 4;
+	                    double macro_recall = ( recall_Rise1+ recall_Rise2 + recall_Down1+ recall_Down2) / (double) 4;
+	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
+	                    double applicability = avaliable_count / (double) (test_size);
+                    
+	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
+	             	    FileOutputStream fos = new FileOutputStream(fout);
+	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
+
+	            		osw.write("=== Confusion Matrix ===\r\n");
+	            		osw.write("          a      b\r\n");
+	            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
+	           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
+	            		osw.write("precision_Rise1: " + precision_Rise1+ "\r\n");
+	            		osw.write("precision_Rise2: " + precision_Rise2+ "\r\n");
+	            		osw.write("precision_Down1: " + precision_Down1+ "\r\n");
+	            		osw.write("precision_Down2: " + precision_Down2+ "\r\n");
+	            		osw.write("recall_Rise1: " + recall_Rise1 + "\r\n");
+	            		osw.write("recall_Rise2: " + recall_Rise2 + "\r\n");
+	            		osw.write("recall_Down1: " + recall_Down1 + "\r\n");
+	            		osw.write("recall_Down2: " + recall_Down2 + "\r\n");
+	            		
+	                    osw.write("macro_precision: " + macro_precision+ "\r\n");
+	                    osw.write("macro_recall: " + macro_recall+ "\r\n");
+	                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
+	            		osw.write("acc: "               + acc+ "\r\n");
+	            		osw.write("applicability: "               +applicability+ "\r\n");
+	            		osw.write("\r\n");
+	            		osw.write("\r\n");
+	    		        osw.close();           	    	
+            	    	
+            	    }
                 }catch (IOException e) {
     	        	System.out.println("[ERROR] I/O Exception.");
     	            e.printStackTrace();  	
