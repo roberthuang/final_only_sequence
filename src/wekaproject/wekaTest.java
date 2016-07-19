@@ -60,7 +60,7 @@ public class wekaTest {
 		return 100 * correct / predictions.size();
 	}
  
-	public static void run(int period, int minsup, String preprocessing_path, String output_path) throws Exception {
+	public static void run(int period, int minsup, String preprocessing_path, String output_path, int class_two) throws Exception {
 
 		BufferedReader datafile = readDataFile(preprocessing_path + "weka_training_" + period + "_" + minsup +".arff");
  
@@ -97,10 +97,24 @@ public class wekaTest {
     	         * Real D |False Positive|True Negative |
     	         * 
     	         */		 
+            	//針對兩類
     			int True_Positive  = 0;
     	        int True_Negative  = 0;
+    	        
     	        int False_Positive = 0;
     	        int False_Negative = 0;     
+    	        
+    	        //針對四類
+    			int True_Rise1  = 0;
+    			int True_Rise2  = 0;
+    			int True_Down1  = 0;
+    			int True_Down2  = 0;
+    	      
+    	        int False_Rise1 = 0;
+    	        int False_Rise2 = 0;     
+    	        int False_Down1 = 0;
+    	        int False_Down2 = 0;   
+    	        
     			int avaliable_count = 0;
     			
             	try {        	
@@ -148,19 +162,47 @@ public class wekaTest {
             	    	String predString = test.classAttribute().value((int) predSVM);   
             	    	
             	    	//Evaluate Criteria
-            	    	if (predString.equals("Rise")) {
-            	    		if (actual.equals("Rise")) {
-            	    			True_Positive++;
-            	    		} else {
-            	    			False_Positive++;
-            	    		}            	    		
-            	    	} else if (predString.equals("Down")) {
-            	    		if (actual.equals("Down")) {
-            	    			True_Negative++;
-            	    		} else {
-            	    			False_Negative++;
-            	    		}            	    		
-            	    	}            	    	
+            	    	if (class_two == 1) {
+	            	        if (predString.equals("Rise")) {
+	            	    		if (actual.equals("Rise")) {
+	            	    			True_Positive++;
+	            	    		} else {
+	            	    			False_Positive++;
+	            	    		}            	    		
+	            	    	} else if (predString.equals("Down")) {
+	            	    		if (actual.equals("Down")) {
+	            	    			True_Negative++;
+	            	    		} else {
+	            	    			False_Negative++;
+	            	    		}            	    		
+	            	    	}      
+            	    	} else {//針對四類
+            	    		if (predString.equals("Rise_1")) {
+            	    			if (actual.equals("Rise_1")) {
+            	    				True_Rise1++;
+	            	    		} else {
+	            	    			False_Rise1++;
+	            	    		}	           	    		
+	            	    	} else if (predString.equals("Rise_2")) {
+	            	    		if (actual.equals("Rise_2")) {
+            	    				True_Rise2++;
+	            	    		} else {
+	            	    			False_Rise2++;
+	            	    		}	          	    		
+	            	    	} else if (predString.equals("Down_1")) {
+	            	    		if (actual.equals("Down_1")) {
+            	    				True_Down1++;
+	            	    		} else {
+	            	    			False_Down1++;
+	            	    		}	
+	                        } else if (predString.equals("Down_2")) {
+	                        	if (actual.equals("Down_2")) {
+            	    				True_Down2++;
+	            	    		} else {
+	            	    			False_Down2++;
+	            	    		}	
+	                        }         
+            	    	}
             	    	System.out.println(actual + ", " + predString);
             	    }
             	    
@@ -226,11 +268,26 @@ public class wekaTest {
         	         * Real D |False Positive|True Negative |
         	         * 
         	         */		 
+                	//針對兩類
         			int True_Positive  = 0;
         	        int True_Negative  = 0;
+        	        
         	        int False_Positive = 0;
         	        int False_Negative = 0;     
-        			int avaliable_count = 0;                	
+        	        
+        	        //針對四類
+        			int True_Rise1  = 0;
+        			int True_Rise2  = 0;
+        			int True_Down1  = 0;
+        			int True_Down2  = 0;
+        	      
+        	        int False_Rise1 = 0;
+        	        int False_Rise2 = 0;     
+        	        int False_Down1 = 0;
+        	        int False_Down2 = 0;   
+        			
+        			int avaliable_count = 0;
+        			
                 	//Build classifier
             	    models[j].buildClassifier(train);
             	                	    
@@ -271,22 +328,50 @@ public class wekaTest {
             	    	String predString = test.classAttribute().value((int) predDT);   
             	    	
             	    	//Evaluate Criteria
-            	    	if (predString.equals("Rise")) {
-            	    		if (actual.equals("Rise")) {
-            	    			True_Positive++;
-            	    		} else {
-            	    			False_Positive++;
-            	    		}            	    		
-            	    	} else if (predString.equals("Down")) {
-            	    		if (actual.equals("Down")) {
-            	    			True_Negative++;
-            	    		} else {
-            	    			False_Negative++;
-            	    		}            	    		
-            	    	}            	    	
+            	    	if (class_two == 1) {
+	            	    	if (predString.equals("Rise")) {
+	            	    		if (actual.equals("Rise")) {
+	            	    			True_Positive++;
+	            	    		} else {
+	            	    			False_Positive++;
+	            	    		}            	    		
+	            	    	} else if (predString.equals("Down")) {
+	            	    		if (actual.equals("Down")) {
+	            	    			True_Negative++;
+	            	    		} else {
+	            	    			False_Negative++;
+	            	    		}            	    		
+	            	    	}  
+            	    	} else {
+            	    		if (predString.equals("Rise_1")) {
+            	    			if (actual.equals("Rise_1")) {
+            	    				True_Rise1++;
+	            	    		} else {
+	            	    			False_Rise1++;
+	            	    		}	           	    		
+	            	    	} else if (predString.equals("Rise_2")) {
+	            	    		if (actual.equals("Rise_2")) {
+            	    				True_Rise2++;
+	            	    		} else {
+	            	    			False_Rise2++;
+	            	    		}	          	    		
+	            	    	} else if (predString.equals("Down_1")) {
+	            	    		if (actual.equals("Down_1")) {
+            	    				True_Down1++;
+	            	    		} else {
+	            	    			False_Down1++;
+	            	    		}	
+	                        } else if (predString.equals("Down_2")) {
+	                        	if (actual.equals("Down_2")) {
+            	    				True_Down2++;
+	            	    		} else {
+	            	    			False_Down2++;
+	            	    		}	
+	                        }                     	    		
+            	    	}
             	    	System.out.println(actual + ", " + predString);
             	    }
-            	  //Evaluate Criteria
+            	    //Evaluate Criteria
             	    //Rise
             	    double precision_rise = 0;
                     if (True_Positive == 0 ) {        	
@@ -405,7 +490,7 @@ public class wekaTest {
         int MA_Diff = 0;
 		int user_defined_class = 1;
         int minsup = 0;
-        
+        int class_two = 0;
         if (args.length < 4) {
 		    System.out.println("Please input: (1) data_path  (2) preprocessing_path  (3) output_path  (4) periods"); 	
 		}
@@ -433,7 +518,7 @@ public class wekaTest {
 
 //		SAXTransformation.start("target2.txt");
 //		SAXTransformation_Testing.start("breakpoint_target_2.txt");
-	    int debug = 1;
+	    int debug = 0;
 		if (debug == 0) {
 	    //先取BIAS與MA
 	    String output = "transformed_petro_subset1_feature.csv";
@@ -454,7 +539,7 @@ public class wekaTest {
         System.out.println("Done for Sequence(Testing)!");
        
 			
-        for (minsup = 192; minsup <= 192; minsup++) {
+        for (minsup = 152; minsup <= 152; minsup++) {
 	    /**Sequential Pattern Mining**/
         sequential_pattern_mining(minsup);
         
@@ -513,7 +598,7 @@ public class wekaTest {
     	saver.setFile(new File(output_arff));
     	//saver.setDestination(new File(args[1]));
     	saver.writeBatch();    	    
-    	run(period, minsup, preprocessing_path, output_path);
+    	run(period, minsup, preprocessing_path, output_path, class_two);
             
 		}
 		
