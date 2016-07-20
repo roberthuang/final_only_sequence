@@ -6,20 +6,20 @@
 	[
 		{
 			"attr_name"		:	"BIAS_N_1",
-			"num_category"	:	3
+			"num_category"	:	2
 		}
 		{
 			"attr_name"		:	"BIAS_N_2",
-			"num_category"	:	3
+			"num_category"	:	2
 		}
 
 		{
 			"attr_name"		:	"BIAS_N_3",
-			"num_category"	:	3
+			"num_category"	:	2
 		}
 		{
 			"attr_name"		:	"BIAS_N_4",
-			"num_category"	:	3
+			"num_category"	:	2
 		}		
 	]
 }

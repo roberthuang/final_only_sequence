@@ -157,6 +157,7 @@ public class wekaTest {
             	    		continue;
             	    	} else {
             	    		if (class_two == 0) {
+            	    			System.out.println("actual, " + actual);
             	    			if (actual.equals("Rise_1")) {
             	    				Real_Rise1++;	
             	    			} else if (actual.equals("Rise_2")) {
@@ -303,7 +304,7 @@ public class wekaTest {
 	                    
 	                    //Precision & Recall
 	            	    double precision_Down2 = 0;	            	  
-	                    if (True_Down1 == 0 ) {        	
+	                    if (True_Down2 == 0 ) {        	
 	                    	precision_Down2 = 0;
 	                    } else {
 	                    	precision_Down2 =  True_Down2 / (double)(True_Down2 + False_Down2);                      
@@ -320,14 +321,15 @@ public class wekaTest {
 	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
 	                    double applicability = avaliable_count / (double) (test_size);
                     
+	                    System.out.println(True_Rise1 + ", " + True_Rise2 + ", " + True_Down1 + ", "  + True_Down2);
+	                    System.out.println("Test size: " + test_size);
+	                    
+	                    
 	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
 	             	    FileOutputStream fos = new FileOutputStream(fout);
 	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
 
-	            		osw.write("=== Confusion Matrix ===\r\n");
-	            		osw.write("          a      b\r\n");
-	            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
-	           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
+
 	            		osw.write("precision_Rise1: " + precision_Rise1+ "\r\n");
 	            		osw.write("precision_Rise2: " + precision_Rise2+ "\r\n");
 	            		osw.write("precision_Down1: " + precision_Down1+ "\r\n");
@@ -513,6 +515,7 @@ public class wekaTest {
 	                    double macro_recall = ( recall_rise + recall_down) / (double) 2;
 	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
 	                    double applicability = avaliable_count / (double) (test_size);
+
 	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
 	             	    FileOutputStream fos = new FileOutputStream(fout);
 	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
@@ -567,7 +570,7 @@ public class wekaTest {
 	                    
 	                    //Precision & Recall
 	            	    double precision_Down2 = 0;	            	  
-	                    if (True_Down1 == 0 ) {        	
+	                    if (True_Down2 == 0 ) {        	
 	                    	precision_Down2 = 0;
 	                    } else {
 	                    	precision_Down2 =  True_Down2 / (double)(True_Down2 + False_Down2);                      
@@ -583,15 +586,14 @@ public class wekaTest {
 	                    double macro_recall = ( recall_Rise1+ recall_Rise2 + recall_Down1+ recall_Down2) / (double) 4;
 	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
 	                    double applicability = avaliable_count / (double) (test_size);
-                    
-	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
+                        
+	                    
+	                    System.out.println(True_Rise1 + ", " + True_Rise2 + ", " + True_Down1 + ", "  + True_Down2);
+	                    System.out.println("Test size: " + test_size);
+	                    File fout = new File(output_path + "DT_liner_"+ period + "_" + minsup +".arff");                	
 	             	    FileOutputStream fos = new FileOutputStream(fout);
 	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
 
-	            		osw.write("=== Confusion Matrix ===\r\n");
-	            		osw.write("          a      b\r\n");
-	            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
-	           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
 	            		osw.write("precision_Rise1: " + precision_Rise1+ "\r\n");
 	            		osw.write("precision_Rise2: " + precision_Rise2+ "\r\n");
 	            		osw.write("precision_Down1: " + precision_Down1+ "\r\n");
@@ -707,13 +709,14 @@ public class wekaTest {
 	    } else {
 	    	feature_target = GetAttr.featureExtraction_target(records);
 	    }  
+	    int debug = 0;
+		if (debug == 0) {
 //	    SAXTransformation.start("target1.txt");
 //		SAXTransformation_Testing.start("breakpoint_target_1.txt");
 
 //		SAXTransformation.start("target2.txt");
 //		SAXTransformation_Testing.start("breakpoint_target_2.txt");
-	    int debug = 0;
-		if (debug == 0) {
+	    
 	    //¥ý¨úBIAS»PMA
 	    String output = "transformed_petro_subset1_feature.csv";
 		GetAttr.featureExtraction_N(output, records, feature_target, period);	
@@ -733,7 +736,7 @@ public class wekaTest {
         System.out.println("Done for Sequence(Testing)!");
        
 			
-        for (minsup = 152; minsup <= 152; minsup++) {
+        for (minsup = 112; minsup <= 112; minsup++) {
 	    /**Sequential Pattern Mining**/
         sequential_pattern_mining(minsup);
         

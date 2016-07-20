@@ -832,7 +832,84 @@ public class GetAttr {
     	
     	
     	HashMap<Integer, String> result = new HashMap<>();
+    	int training_data_size = (int)((records.size() - 1)*0.8);
+    	int index_of_target_att = records.get(0).size()-1;
+    	int Rise1_in_training = 0, Rise2_in_training = 0, Down1_in_training = 0, Down2_in_training = 0;
+    	double threshold = 0.025;
     	
+    	for (int i = 1; i <= training_data_size; i++) {    	
+    		if (i == 1) {
+    			Down1_in_training++;
+    			continue;
+    		}
+    		double price_now = Double.parseDouble(records.get(i).get(index_of_target_att));
+    	    double price_pre = Double.parseDouble(records.get(i-1).get(index_of_target_att));
+    	    double price_per_level = (price_now-price_pre) / (double) price_pre;    	
+    	    if (price_per_level > 0) {
+    	    	if (price_per_level > threshold) {
+    	    		result.put(i, "Rise_2");
+    	    		Rise2_in_training++;   	
+    	    	} else {
+    	    		result.put(i, "Rise_1");
+    	    		Rise1_in_training++;
+    	    	}
+    	    } else {
+    	    	if (price_per_level == 0) {
+    	    		result.put(i, "Down_1");
+    	    		Down1_in_training++;	
+    	    	} else {
+    	    		if (Math.abs(price_per_level) > threshold) {	
+    	    			result.put(i, "Down_2");
+    	    			Down2_in_training++;  	
+    	    		} else {
+    	    			result.put(i, "Down_1");
+    	    			Down1_in_training++;
+    	    		}
+    	    	}
+    	    }
+    	
+    	}
+    	System.out.println("Rise1_in_training: " + Rise1_in_training);
+    	System.out.println("Rise2_in_training: " + Rise2_in_training);
+    	System.out.println("Down1_in_training: " + Down1_in_training);
+    	System.out.println("Down2_in_training: " + Down2_in_training);
+    	System.out.println();
+    	int Rise1_in_testing = 0, Rise2_in_testing = 0, Down1_in_testing = 0, Down2_in_testing = 0;
+    	for (int i = training_data_size+1; i < records.size(); i++) {
+    		double price_now = Double.parseDouble(records.get(i).get(index_of_target_att));
+    	    double price_pre = Double.parseDouble(records.get(i-1).get(index_of_target_att));
+    	    double price_per_level = (price_now-price_pre) / (double) price_pre;    	
+    	    if (price_per_level > 0) {
+    	    	if (price_per_level > threshold) {
+    	    		result.put(i, "Rise_2");
+    	    		Rise2_in_testing++;   	
+    	    	} else {
+    	    		result.put(i, "Rise_1");
+    	    		Rise1_in_testing++;
+    	    	}
+    	    } else {
+    	    	if (price_per_level == 0) {
+    	    		result.put(i, "Down_1");
+    	    		Down1_in_testing++;	
+    	    	} else {
+    	    		if (Math.abs(price_per_level) > threshold) {	
+    	    			result.put(i, "Down_2");
+    	    			Down2_in_testing++;  	
+    	    		} else {
+    	    			result.put(i, "Down_1");
+    	    			Down1_in_testing++;
+    	    		}
+    	    	}
+    	    }
+    	
+    	}
+    	System.out.println("Rise1_in_testing: " + Rise1_in_testing);
+    	System.out.println("Rise2_in_testing: " + Rise2_in_testing);
+    	System.out.println("Down1_in_testing: " + Down1_in_testing);
+    	System.out.println("Down2_in_testing: " + Down2_in_testing);
+    	
+    	
+    	/*
     	int debug = 0;
     	if (debug == 1) {
     	ArrayList<ArrayList<String>> result_train_1 = new ArrayList<>();
@@ -1023,6 +1100,8 @@ public class GetAttr {
     		
     		
     	}
+
+    	*/
 		return result;
     	
     	
