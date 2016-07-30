@@ -1,4 +1,29 @@
-java -jar C:\\user\\workspace\\final_only_sequence\\final0.jar "C:\\user\\workspace\\final_only_sequence\\petro_subset1_2010_rate.csv" "C:\\user\\workspace\\final_only_sequence\\preprocessing\\" "C:\\user\\workspace\\final_only_sequence\\data\\"  7 
+java -jar final_only_sequence_5.jar "petro_subset1_2010_rate.csv" "preprocessing\\" "data\\"  5 
+java -jar final_only_sequence_5.jar "petro_subset1_2010_rate.csv" "preprocessing\\" "data\\"  4
+java -jar final_only_sequence_5.jar "petro_subset1_2010_rate.csv" "preprocessing\\" "data\\"  3
+java -jar final_only_sequence_5.jar "petro_subset1_2010_rate.csv" "preprocessing\\" "data\\"  2
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  
 

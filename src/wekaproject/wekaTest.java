@@ -7,21 +7,18 @@ import ca.pfv.spmf.input.sequence_database_list_strings.SequenceDatabase;
 import dataPreprocessing.SAXTransformation;
 import dataPreprocessing.SAXTransformation_Testing;
 import getAttribute.GetAttr;
-import ruleGeneration.RuleEvaluation;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.evaluation.NominalPrediction;
-
 import weka.classifiers.functions.LibSVM;
 import weka.classifiers.trees.J48;
 import weka.core.FastVector;
-import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
-
-
+import weka.classifiers.meta.Vote;
 import transferToSDB.T2SDB;
 import weka.core.converters.ArffSaver;
+
 public class wekaTest {
 	static HashSet<List<String>> powerSet = new HashSet<List<String>>();
 	
@@ -60,7 +57,7 @@ public class wekaTest {
 		return 100 * correct / predictions.size();
 	}
  
-	public static void run(int period, int minsup, String preprocessing_path, String output_path, int class_two) throws Exception {
+	public static void run(int period, int minsup, String preprocessing_path, String output_path, int class_two, double default_percentage) throws Exception {
 
 		BufferedReader datafile = readDataFile(preprocessing_path + "weka_training_" + period + "_" + minsup +".arff");
  
@@ -78,547 +75,96 @@ public class wekaTest {
 		test.setClassIndex(test.numAttributes()-1);		
 		// Use a set of classifiers
 		Classifier[] models = { 
-				new J48(), // a decision tree			
 				new LibSVM(),
+				new J48(), 		
+				new Vote() 
 		};
 		
 		
 		
 		// Run for each model
-		for (int j = 0; j < models.length; j++) {
-
-			
+		for (int j = 0; j < models.length; j++) {			
 			//SVM MODULE, SET KERNEL
-            if (j == 1) {
-            	/** Criteria:         
-    	         *           Predict R      Predict D
-    	         * Real R |True Positive |False Negative|           
-    	         *        -------------------------------
-    	         * Real D |False Positive|True Negative |
-    	         * 
-    	         */		 
-            	//針對兩類
-    			int True_Positive  = 0;
-    	        int True_Negative  = 0;
-    	        
-    	        int False_Positive = 0;
-    	        int False_Negative = 0;     
-    	        
-    	        //針對四類
-    			int True_Rise1  = 0;
-    			int True_Rise2  = 0;
-    			int True_Down1  = 0;
-    			int True_Down2  = 0;
-    	      
-    	        int False_Rise1 = 0;
-    	        int False_Rise2 = 0;     
-    	        int False_Down1 = 0;
-    	        int False_Down2 = 0;   
-    	        
-    	        int Real_Rise1 = 0;
-    	        int Real_Rise2 = 0;    	        
-    	        int Real_Down1 = 0;
-    	        int Real_Down2 = 0;
-    			int avaliable_count = 0;
-    			
-            	try {        	
-            		
-            		//Linear kernel
-            	    String options = ( "-K 0" );
-            	    String[] optionsArray = options.split( " " );
-            	    models[j].setOptions(optionsArray);    
-            	    
-    		        //Build classifier
-            	    models[j].buildClassifier(train);
-		            
-            	    //Classify each test case
-            	    for (int i = 2; i < test.numInstances(); i++) {
-            	    	
-            	    	//Get class double value for current instance
-            	    	double actualClass = test.instance(i).classValue();
-            	    	
-            	    	//Get class string value using the class index using the class's int value
-            	    	String actual = test.classAttribute().value((int) actualClass);
-            	    	
-            	    	//Get Instance object of current instance
-            	    	Instance newInst = test.instance(i);
-            	    	
-            	    	//Check if test case is available
-            	    	boolean none_zero = false;
-            	    	for (int k= 0; k < newInst.numValues(); k++) {
-            	            int att = (int)newInst.value(k);
-            	            if (att == 1) {
-            	            	none_zero = true;
-            	            	break;            	            	
-            	            }
-            	    	}
-            	    	
-            	    	if (none_zero == false) {
-            	    		continue;
-            	    	} else {
-            	    		if (class_two == 0) {
-            	    			System.out.println("actual, " + actual);
-            	    			if (actual.equals("Rise_1")) {
-            	    				Real_Rise1++;	
-            	    			} else if (actual.equals("Rise_2")) {
-            	    				Real_Rise2++;		
-            	    			} else if (actual.equals("Down_1")) {
-            	    				Real_Down1++;
-            	    			} else if (actual.equals("Down_2")) {
-            	    				Real_Down2++;
-            	    			}
-            	    		} 
-            	    	    avaliable_count++;
-            	    	}
-
-            	    	//Call classifyInstance, which returns a double value for class
-            	    	double predSVM = models[j].classifyInstance(newInst);
-            	    	
-            	    	//Using this value to get string value of the predicted class
-            	    	String predString = test.classAttribute().value((int) predSVM);   
-            	    	
-            	    	//Evaluate Criteria
-            	    	if (class_two == 1) {
-	            	        if (predString.equals("Rise")) {
-	            	    		if (actual.equals("Rise")) {
-	            	    			True_Positive++;
-	            	    		} else {
-	            	    			False_Positive++;
-	            	    		}            	    		
-	            	    	} else if (predString.equals("Down")) {
-	            	    		if (actual.equals("Down")) {
-	            	    			True_Negative++;
-	            	    		} else {
-	            	    			False_Negative++;
-	            	    		}            	    		
-	            	    	}      
-            	    	} else {//針對四類
-            	    		if (predString.equals("Rise_1")) {
-            	    			if (actual.equals("Rise_1")) {
-            	    				True_Rise1++;
-	            	    		} else {
-	            	    			False_Rise1++;
-	            	    		}	           	    		
-	            	    	} else if (predString.equals("Rise_2")) {
-	            	    		if (actual.equals("Rise_2")) {
-            	    				True_Rise2++;
-	            	    		} else {
-	            	    			False_Rise2++;
-	            	    		}	          	    		
-	            	    	} else if (predString.equals("Down_1")) {
-	            	    		if (actual.equals("Down_1")) {
-            	    				True_Down1++;
-	            	    		} else {
-	            	    			False_Down1++;
-	            	    		}	
-	                        } else if (predString.equals("Down_2")) {
-	                        	if (actual.equals("Down_2")) {
-            	    				True_Down2++;
-	            	    		} else {
-	            	    			False_Down2++;
-	            	    		}	
-	                        }         
-            	    	}
-            	    	System.out.println(actual + ", " + predString);
-            	    }
-            	    
-            	    //Evaluate Criteria
-            	    if (class_two == 1) {
-	            	    int test_size = (test.numInstances()-2);
-	                    int size = True_Negative +  True_Positive + False_Positive + False_Negative;
-	            	    //Rise
-	            	    double precision_rise = 0;
-	                    if (True_Positive == 0 ) {        	
-	                    	precision_rise = 0;
-	                    } else {
-	                    	precision_rise =  True_Positive / (double)(True_Positive + False_Positive);                      
-	                    }       
-	            	    
-	                    double recall_rise =  True_Positive / (double) (True_Positive + False_Negative);
-	                    
-	                    //Down                   
-	                    double precision_down = 0;
-	                    if (True_Negative == 0 ) {        	
-	                    	precision_down = 0;
-	                    } else {
-	                    	precision_down =  True_Negative / (double)(True_Negative +  False_Negative);                       
-	                    }     
-	                  
-	                    double acc =  (True_Positive + True_Negative)/ (double)(size);
-	                    double recall_down =  True_Negative / (double) (True_Negative + False_Positive);                    
-	                    double macro_precision = ( precision_rise + precision_down) / (double) 2;
-	                    double macro_recall = ( recall_rise + recall_down) / (double) 2;
-	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
-	                    double applicability = avaliable_count / (double) (test_size);
-	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
-	             	    FileOutputStream fos = new FileOutputStream(fout);
-	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
-
-	            		osw.write("=== Confusion Matrix ===\r\n");
-	            		osw.write("          a      b\r\n");
-	            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
-	           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
-	            		osw.write("precision_rise: " + precision_rise+ "\r\n");
-	            		osw.write("recall_rise: " + recall_rise + "\r\n");
-	            		osw.write("precision_down: " + precision_down+ "\r\n");
-	           		    osw.write("recall_down: " + recall_down + "\r\n");
-	                    osw.write("macro_precision: " + macro_precision+ "\r\n");
-	                    osw.write("macro_recall: " + macro_recall+ "\r\n");
-	                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
-	            		osw.write("acc: "               + acc+ "\r\n");
-	            		osw.write("applicability: "               +applicability+ "\r\n");
-	            		osw.write("\r\n");
-	            		osw.write("\r\n");
-	    		        osw.close();
-	    		        
-            	    } else {
-            	    	int test_size = (test.numInstances()-2);
-	                    int size = True_Rise1 +  True_Rise2 + True_Down1 + True_Down2 +  False_Rise1 +  False_Rise2 + False_Down1 + False_Down2;
-	            	    //Rise
-	                    //Precision & Recall
-	            	    double precision_Rise1 = 0;	            	  
-	                    if (True_Rise1 == 0 ) {        	
-	                    	precision_Rise1 = 0;
-	                    } else {
-	                    	precision_Rise1 =  True_Rise1 / (double)(True_Rise1+ False_Rise1);                      
-	                    }     
-	                    double recall_Rise1 =  True_Rise1 / (double) Real_Rise1;
-	                   
-	                    //Precision & Recall
-	            	    double precision_Rise2 = 0;	            	  
-	                    if (True_Rise2 == 0 ) {        	
-	                    	precision_Rise2 = 0;
-	                    } else {
-	                    	precision_Rise2 =  True_Rise2 / (double)(True_Rise2+ False_Rise2);                      
-	                    }     
-	                    double recall_Rise2 =  True_Rise2 / (double) Real_Rise2;
-
-	                    //Precision & Recall
-	            	    double precision_Down1 = 0;	            	  
-	                    if (True_Down1 == 0 ) {        	
-	                    	precision_Down1 = 0;
-	                    } else {
-	                    	precision_Down1 =  True_Down1 / (double)(True_Down1+ False_Down1);                      
-	                    }     
-	                    double recall_Down1 =  True_Down1 / (double) Real_Down1;
-	                    
-	                    //Precision & Recall
-	            	    double precision_Down2 = 0;	            	  
-	                    if (True_Down2 == 0 ) {        	
-	                    	precision_Down2 = 0;
-	                    } else {
-	                    	precision_Down2 =  True_Down2 / (double)(True_Down2 + False_Down2);                      
-	                    }     
-	                    double recall_Down2 =  True_Down2 / (double) Real_Down2;
-	                    
-	            	    
-	                    	                
-	                  
-	                    double acc =  (True_Rise1 + True_Rise2 +True_Down1 +True_Down2)/ (double)(size);
-              
-	                    double macro_precision = ( precision_Rise1+ precision_Rise2 + precision_Down1 + precision_Down2) / (double) 4;
-	                    double macro_recall = ( recall_Rise1+ recall_Rise2 + recall_Down1+ recall_Down2) / (double) 4;
-	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
-	                    double applicability = avaliable_count / (double) (test_size);
-                    
-	                    System.out.println(True_Rise1 + ", " + True_Rise2 + ", " + True_Down1 + ", "  + True_Down2);
-	                    System.out.println("Test size: " + test_size);
-	                    
-	                    
-	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
-	             	    FileOutputStream fos = new FileOutputStream(fout);
-	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
-
-
-	            		osw.write("precision_Rise1: " + precision_Rise1+ "\r\n");
-	            		osw.write("precision_Rise2: " + precision_Rise2+ "\r\n");
-	            		osw.write("precision_Down1: " + precision_Down1+ "\r\n");
-	            		osw.write("precision_Down2: " + precision_Down2+ "\r\n");
-	            		osw.write("recall_Rise1: " + recall_Rise1 + "\r\n");
-	            		osw.write("recall_Rise2: " + recall_Rise2 + "\r\n");
-	            		osw.write("recall_Down1: " + recall_Down1 + "\r\n");
-	            		osw.write("recall_Down2: " + recall_Down2 + "\r\n");
-	            		
-	                    osw.write("macro_precision: " + macro_precision+ "\r\n");
-	                    osw.write("macro_recall: " + macro_recall+ "\r\n");
-	                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
-	            		osw.write("acc: "               + acc+ "\r\n");
-	            		osw.write("applicability: "               +applicability+ "\r\n");
-	            		osw.write("\r\n");
-	            		osw.write("\r\n");
-	    		        osw.close();           	    	
-            	    	
-            	    } // end if class_two
-                    
-                    
-                    
-                    
-                	
-    		        
-            	}catch (IOException e) {
-    	        	System.out.println("[ERROR] I/O Exception.");
-    	            e.printStackTrace();  	
-    	        }   
-
-            } else {
-                try {       
-                	/** Criteria:         
-        	         *           Predict R      Predict D
-        	         * Real R |True Positive |False Negative|           
-        	         *        -------------------------------
-        	         * Real D |False Positive|True Negative |
-        	         * 
-        	         */		 
-                	//針對兩類
-        			int True_Positive  = 0;
-        	        int True_Negative  = 0;
-        	        
-        	        int False_Positive = 0;
-        	        int False_Negative = 0;     
-        	        
-        	        //針對四類
-        			int True_Rise1  = 0;
-        			int True_Rise2  = 0;
-        			int True_Down1  = 0;
-        			int True_Down2  = 0;
-        	      
-        	        int False_Rise1 = 0;
-        	        int False_Rise2 = 0;     
-        	        int False_Down1 = 0;
-        	        int False_Down2 = 0;   
-        	        
-        	        int Real_Rise1 = 0;
-        	        int Real_Rise2 = 0;    	        
-        	        int Real_Down1 = 0;
-        	        int Real_Down2 = 0;
-        			int avaliable_count = 0;
-
-                	//Build classifier
-            	    models[j].buildClassifier(train);
-            	                	    
-                	//Classify each test case
-            	    for (int i = 2; i < test.numInstances(); i++) {
-            	    	
-            	    	
-            	    	
-            	    	
-            	    	//Get class double value for current instance
-            	    	double actualClass = test.instance(i).classValue();
-            	    	
-            	    	//Get class string value using the class index using the class's int value
-            	    	String actual = test.classAttribute().value((int) actualClass);
-            	    	
-            	    	//Get Instance object of current instance
-            	    	Instance newInst = test.instance(i);
-            	    	//Check if test case is available
-            	    	boolean none_zero = false;
-            	    	for (int k= 0; k < newInst.numValues(); k++) {
-            	            int att = (int)newInst.value(k);
-            	            if (att == 1) {
-            	            	none_zero = true;
-            	            	break;            	            	
-            	            }
-            	    	}
-            	    	
-            	    	if (none_zero == false) {
-            	    		continue;
-            	    	} else {
-            	    		if (class_two == 0) {
-            	    			if (actual.equals("Rise_1")) {
-            	    				Real_Rise1++;	
-            	    			} else if (actual.equals("Rise_2")) {
-            	    				Real_Rise2++;		
-            	    			} else if (actual.equals("Down_1")) {
-            	    				Real_Down1++;
-            	    			} else if (actual.equals("Down_2")) {
-            	    				Real_Down2++;
-            	    			}
-            	    		}             	    		
-            	    	    avaliable_count++;
-            	    	}
-
-            	    	//Call classifyInstance, which returns a double value for class
-            	    	double predDT = models[j].classifyInstance(newInst);
-            	    	
-            	    	//Using this value to get string value of the predicted class
-            	    	String predString = test.classAttribute().value((int) predDT);   
-            	    	
-            	    	//Evaluate Criteria
-            	    	if (class_two == 1) {
-	            	    	if (predString.equals("Rise")) {
-	            	    		if (actual.equals("Rise")) {
-	            	    			True_Positive++;
-	            	    		} else {
-	            	    			False_Positive++;
-	            	    		}            	    		
-	            	    	} else if (predString.equals("Down")) {
-	            	    		if (actual.equals("Down")) {
-	            	    			True_Negative++;
-	            	    		} else {
-	            	    			False_Negative++;
-	            	    		}            	    		
-	            	    	}  
-            	    	} else {
-            	    		if (predString.equals("Rise_1")) {
-            	    			if (actual.equals("Rise_1")) {
-            	    				True_Rise1++;
-	            	    		} else {
-	            	    			False_Rise1++;
-	            	    		}	           	    		
-	            	    	} else if (predString.equals("Rise_2")) {
-	            	    		if (actual.equals("Rise_2")) {
-            	    				True_Rise2++;
-	            	    		} else {
-	            	    			False_Rise2++;
-	            	    		}	          	    		
-	            	    	} else if (predString.equals("Down_1")) {
-	            	    		if (actual.equals("Down_1")) {
-            	    				True_Down1++;
-	            	    		} else {
-	            	    			False_Down1++;
-	            	    		}	
-	                        } else if (predString.equals("Down_2")) {
-	                        	if (actual.equals("Down_2")) {
-            	    				True_Down2++;
-	            	    		} else {
-	            	    			False_Down2++;
-	            	    		}	
-	                        }                     	    		
-            	    	}
-            	    	System.out.println(actual + ", " + predString);
-            	    }
-            	    //Evaluate Criteria
-            	    if (class_two == 1) {
-	            	    int test_size = (test.numInstances()-2);
-	                    int size = True_Negative +  True_Positive + False_Positive + False_Negative;
-	            	    //Rise
-	            	    double precision_rise = 0;
-	                    if (True_Positive == 0 ) {        	
-	                    	precision_rise = 0;
-	                    } else {
-	                    	precision_rise =  True_Positive / (double)(True_Positive + False_Positive);                      
-	                    }       
-	            	    
-	                    double recall_rise =  True_Positive / (double) (True_Positive + False_Negative);
-	                    
-	                    //Down                   
-	                    double precision_down = 0;
-	                    if (True_Negative == 0 ) {        	
-	                    	precision_down = 0;
-	                    } else {
-	                    	precision_down =  True_Negative / (double)(True_Negative +  False_Negative);                       
-	                    }     
-	                  
-	                    double acc =  (True_Positive + True_Negative)/ (double)(size);
-	                    double recall_down =  True_Negative / (double) (True_Negative + False_Positive);                    
-	                    double macro_precision = ( precision_rise + precision_down) / (double) 2;
-	                    double macro_recall = ( recall_rise + recall_down) / (double) 2;
-	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
-	                    double applicability = avaliable_count / (double) (test_size);
-
-	                    File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
-	             	    FileOutputStream fos = new FileOutputStream(fout);
-	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
-
-	            		osw.write("=== Confusion Matrix ===\r\n");
-	            		osw.write("          a      b\r\n");
-	            		osw.write("a=Rise   " + True_Positive + "\t" + False_Negative + "\r\n");
-	           		    osw.write("b=Down   " + False_Positive + "\t" + True_Negative+ "\r\n");		
-	            		osw.write("precision_rise: " + precision_rise+ "\r\n");
-	            		osw.write("recall_rise: " + recall_rise + "\r\n");
-	            		osw.write("precision_down: " + precision_down+ "\r\n");
-	           		    osw.write("recall_down: " + recall_down + "\r\n");
-	                    osw.write("macro_precision: " + macro_precision+ "\r\n");
-	                    osw.write("macro_recall: " + macro_recall+ "\r\n");
-	                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
-	            		osw.write("acc: "               + acc+ "\r\n");
-	            		osw.write("applicability: "               +applicability+ "\r\n");
-	            		osw.write("\r\n");
-	            		osw.write("\r\n");
-	    		        osw.close();
-	    		        
-            	    } else {
-            	    	int test_size = (test.numInstances()-2);
-	                    int size = True_Rise1 +  True_Rise2 + True_Down1 + True_Down2 +  False_Rise1 +  False_Rise2 + False_Down1 + False_Down2;
-	            	    //Rise
-	                    //Precision & Recall
-	            	    double precision_Rise1 = 0;	            	  
-	                    if (True_Rise1 == 0 ) {        	
-	                    	precision_Rise1 = 0;
-	                    } else {
-	                    	precision_Rise1 =  True_Rise1 / (double)(True_Rise1+ False_Rise1);                      
-	                    }     
-	                    double recall_Rise1 =  True_Rise1 / (double) Real_Rise1;
-	                   
-	                    //Precision & Recall
-	            	    double precision_Rise2 = 0;	            	  
-	                    if (True_Rise2 == 0 ) {        	
-	                    	precision_Rise2 = 0;
-	                    } else {
-	                    	precision_Rise2 =  True_Rise2 / (double)(True_Rise2+ False_Rise2);                      
-	                    }     
-	                    double recall_Rise2 =  True_Rise2 / (double) Real_Rise2;
-
-	                    //Precision & Recall
-	            	    double precision_Down1 = 0;	            	  
-	                    if (True_Down1 == 0 ) {        	
-	                    	precision_Down1 = 0;
-	                    } else {
-	                    	precision_Down1 =  True_Down1 / (double)(True_Down1+ False_Down1);                      
-	                    }     
-	                    double recall_Down1 =  True_Down1 / (double) Real_Down1;
-	                    
-	                    //Precision & Recall
-	            	    double precision_Down2 = 0;	            	  
-	                    if (True_Down2 == 0 ) {        	
-	                    	precision_Down2 = 0;
-	                    } else {
-	                    	precision_Down2 =  True_Down2 / (double)(True_Down2 + False_Down2);                      
-	                    }     
-	                    double recall_Down2 =  True_Down2 / (double) Real_Down2;
-	                    
-	            	    
-	                    	                
-	                  
-	                    double acc =  (True_Rise1 + True_Rise2 +True_Down1 +True_Down2)/ (double)(size);
-              
-	                    double macro_precision = ( precision_Rise1+ precision_Rise2 + precision_Down1 + precision_Down2) / (double) 4;
-	                    double macro_recall = ( recall_Rise1+ recall_Rise2 + recall_Down1+ recall_Down2) / (double) 4;
-	                    double macro_f_measure = 2*(macro_precision*macro_recall)/ (macro_precision+macro_recall);
-	                    double applicability = avaliable_count / (double) (test_size);
-                        
-	                    
-	                    System.out.println(True_Rise1 + ", " + True_Rise2 + ", " + True_Down1 + ", "  + True_Down2);
-	                    System.out.println("Test size: " + test_size);
-	                    File fout = new File(output_path + "DT_liner_"+ period + "_" + minsup +".arff");                	
-	             	    FileOutputStream fos = new FileOutputStream(fout);
-	                    OutputStreamWriter osw = new OutputStreamWriter(fos);            	
-
-	            		osw.write("precision_Rise1: " + precision_Rise1+ "\r\n");
-	            		osw.write("precision_Rise2: " + precision_Rise2+ "\r\n");
-	            		osw.write("precision_Down1: " + precision_Down1+ "\r\n");
-	            		osw.write("precision_Down2: " + precision_Down2+ "\r\n");
-	            		osw.write("recall_Rise1: " + recall_Rise1 + "\r\n");
-	            		osw.write("recall_Rise2: " + recall_Rise2 + "\r\n");
-	            		osw.write("recall_Down1: " + recall_Down1 + "\r\n");
-	            		osw.write("recall_Down2: " + recall_Down2 + "\r\n");
-	            		
-	                    osw.write("macro_precision: " + macro_precision+ "\r\n");
-	                    osw.write("macro_recall: " + macro_recall+ "\r\n");
-	                    osw.write("macro_f_measure: " + macro_f_measure+ "\r\n");
-	            		osw.write("acc: "               + acc+ "\r\n");
-	            		osw.write("applicability: "               +applicability+ "\r\n");
-	            		osw.write("\r\n");
-	            		osw.write("\r\n");
-	    		        osw.close();           	    	
-            	    	
-            	    }
+            if (j == 0) {
+            	try {        	           		
+	           	    String options = ( "-K 0" );
+	           	    String[] optionsArray = options.split( " " );
+	           	    models[j].setOptions(optionsArray);                        	
+	   		        Evaluation validation = classify(models[j], train, test);
+	   		        FastVector predictions = new FastVector();
+	   		        predictions.appendElements(validation.predictions());
+	   		        		     
+	   		        double percentage  = validation.correct()/(double)(validation.incorrect() + validation.correct());
+			        if (percentage < default_percentage) continue;   		        
+	               	File fout = new File(output_path + "svm_liner_"+ period + "_" + minsup +".arff");                	
+	            	FileOutputStream fos = new FileOutputStream(fout);
+	                OutputStreamWriter osw = new OutputStreamWriter(fos);            	
+	           	    
+	           	    
+	           	
+	           	   
+	   		        osw.write(validation.toSummaryString("\nResults:SVM(LINEAR)\n======\n", true)); 
+	   		        osw.write("\r\n");
+	   		        osw.write(validation.toClassDetailsString());
+	   		        osw.close();
+           	    }catch (IOException e) {
+   	        	    System.out.println("[ERROR] I/O Exception.");
+   	                e.printStackTrace();  	
+   	            }               	
+            	
+            
+            } else if (j == 1) {
+                try {        
+                  	// Collect every group of predictions for current model in a FastVector
+  			        FastVector predictions = new FastVector();
+  		            Evaluation validation = classify(models[j], train, test); 
+  		            predictions.appendElements(validation.predictions());
+  		            double percentage  = validation.correct()/(double)(validation.incorrect() + validation.correct());
+  		            if (percentage < default_percentage) continue;
+  		            
+                    File fout = new File(output_path + "DT_"+ period + "_" + minsup +".arff");                	
+               	    FileOutputStream fos = new FileOutputStream(fout);
+                    OutputStreamWriter osw = new OutputStreamWriter(fos);   			           
+  		            osw.write(validation.toSummaryString("\nResults:"+models[j].getClass().getSimpleName() + "\n======\n", true)); 
+      		        osw.write("\r\n");
+      		        osw.write(validation.toClassDetailsString());
+  		            osw.close();
                 }catch (IOException e) {
-    	        	System.out.println("[ERROR] I/O Exception.");
-    	            e.printStackTrace();  	
-    	        }   		           
-		    
-            }
+      	        	System.out.println("[ERROR] I/O Exception.");
+      	            e.printStackTrace();  	
+      	        }   		                       	            
+            } else if (j == 2) {
+            	try {        
+                  	// Collect every group of predictions for current model in a FastVector
+  			        FastVector predictions = new FastVector();
+  			        // build 1. J48
+  			        J48 j48 = new J48(); 
+  			        j48.buildClassifier(train); 
+  			        
+  			        // build 1. J48
+  			        LibSVM svm = new LibSVM(); 
+  			        svm.buildClassifier(train); 
+  			        
+  			        // setup Vote 
+  			        Vote vote = new Vote();
+  			        vote.setClassifiers(new Classifier[]{j48, svm});
+  		            Evaluation validation = classify(vote, train, test); 
+  		            predictions.appendElements(validation.predictions());
+  		            double percentage  = validation.correct()/(double)(validation.incorrect() + validation.correct());
+  		            if (percentage < default_percentage) continue;
+  		            
+                    File fout = new File(output_path + "vote_"+ period + "_" + minsup +".arff");                	
+               	    FileOutputStream fos = new FileOutputStream(fout);
+                    OutputStreamWriter osw = new OutputStreamWriter(fos);   			           
+  		            osw.write(validation.toSummaryString("\nResults:"+models[j].getClass().getSimpleName() + "\n======\n", true)); 
+      		        osw.write("\r\n");
+      		        osw.write(validation.toClassDetailsString());
+  		            osw.close();
+                  }catch (IOException e) {
+      	        	System.out.println("[ERROR] I/O Exception.");
+      	            e.printStackTrace();  	
+      	          }              	            	
+            } 
 		}
 	}
 	
@@ -684,9 +230,10 @@ public class wekaTest {
 		int MA_Relative = 0;
 		int MA_N = 0;
         int MA_Diff = 0;
-		int user_defined_class = 1;
+		int user_defined_class = 0;
         int minsup = 0;
         int class_two = 0;
+        double default_percentage = 0.75;
         if (args.length < 4) {
 		    System.out.println("Please input: (1) data_path  (2) preprocessing_path  (3) output_path  (4) periods"); 	
 		}
@@ -735,11 +282,13 @@ public class wekaTest {
         int SDB_Testing_Size = t.translate_testing_sliding_window(N, path_of_testing_file, "SDB(Testing).txt");		
         System.out.println("Done for Sequence(Testing)!");
        
-			
-        for (minsup = 112; minsup <= 112; minsup++) {
+		int debug_sequential_number = 0;
+        for (minsup = 172; minsup <= 172; minsup++) {
 	    /**Sequential Pattern Mining**/
+        System.out.println("Minsup, " + minsup/ (double) 228);
         sequential_pattern_mining(minsup);
         
+        if (debug_sequential_number == 0) {
 	    /**讀取Sequence**/
 	    ArrayList<ArrayList<ArrayList<String>>> sequences = ReadSDB_for_sequence("sequential_patterns.txt");
 //	    for (ArrayList<ArrayList<String>> sequence : sequences) {
@@ -795,8 +344,8 @@ public class wekaTest {
     	saver.setFile(new File(output_arff));
     	//saver.setDestination(new File(args[1]));
     	saver.writeBatch();    	    
-    	run(period, minsup, preprocessing_path, output_path, class_two);
-            
+    	run(period, minsup, preprocessing_path, output_path, class_two, default_percentage);
+        }    
 		}
 		
         }
