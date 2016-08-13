@@ -221,9 +221,10 @@ public class wekaTest {
 		  return result;			
 	}
 	 
-	public static void main(String[] args) throws Exception {		
+	public static void main(String[] args) throws Exception {	
+		
 		/**參數設定**/		
-		int N = 5;
+		int N = 20;
 		int Original_Level = 0;
 		int Original_Relative = 0;
 		int Original_Data = 0;
@@ -234,6 +235,7 @@ public class wekaTest {
         int minsup = 0;
         int class_two = 0;
         double default_percentage = 0.75;
+        
         if (args.length < 4) {
 		    System.out.println("Please input: (1) data_path  (2) preprocessing_path  (3) output_path  (4) periods"); 	
 		}
@@ -241,6 +243,7 @@ public class wekaTest {
 		String data_path = args[0];
 		String preprocessing_path = args[1];
 		String output_path = args[2];
+		
 		//選MA BIAS的週期
 		int period = Integer.parseInt(args[3]); 
 				
@@ -283,7 +286,7 @@ public class wekaTest {
         System.out.println("Done for Sequence(Testing)!");
        
 		int debug_sequential_number = 0;
-        for (minsup = 172; minsup <= 172; minsup++) {
+        for (minsup = 152; minsup <= 152; minsup++) {
 	    /**Sequential Pattern Mining**/
         System.out.println("Minsup, " + minsup/ (double) 228);
         sequential_pattern_mining(minsup);
@@ -312,7 +315,7 @@ public class wekaTest {
     	    
         T2SDB t2sdb = new T2SDB();   
     	String input = output_fe_weka;
-    	String output_txt =  preprocessing_path+"weka_training_" + period + "_" + minsup +".txt";
+    	String output_txt =  preprocessing_path+ ""+"weka_training_" + period + "_" + minsup +".txt";
     	t2sdb.translate_training_sliding_window_weka_including_level_new(N, input, feature_target, output_txt, Original_Level, records, records.get(0).size()-1, SF);
     	
     	    
@@ -336,7 +339,7 @@ public class wekaTest {
     	String input_for_csvloader = preprocessing_path + "weka_training_" + period + "_" + minsup +".csv";
     	loader.setSource(new File(input_for_csvloader));
     	Instances data1 = loader.getDataSet();
-    	    
+    	     
     	/**save ARFF**/
     	ArffSaver saver = new ArffSaver();
     	saver.setInstances(data1);
@@ -344,7 +347,7 @@ public class wekaTest {
     	saver.setFile(new File(output_arff));
     	//saver.setDestination(new File(args[1]));
     	saver.writeBatch();    	    
-    	run(period, minsup, preprocessing_path, output_path, class_two, default_percentage);
+    	//run(period, minsup, preprocessing_path, output_path, class_two, default_percentage);
         }    
 		}
 		
@@ -449,17 +452,24 @@ public class wekaTest {
 	            result.add(itemsets);
 	       // }
 	     }      
-	     /*
+	     
 	     int inter = 0;
 	     //看交錯情形
 	     int inter1 = 0, inter2 = 0, inter3 = 0, inter4 = 0;
 	     for (ArrayList<ArrayList<String>> sequence : result) {
 	    	 int max = 0;
+	    	 if (sequence.size() == 1) {
+    			 max = 0;
+    			 System.out.println(sequence+ "  " + max);
+    			 continue;
+    		 }
 	    	 ArrayList<String> first_itemset = sequence.get(0);	    	 
 	    	 for (String first_item : first_itemset) {
 	    		 int cur = 0;
+	    		 
 	    		 for (int i = 1; i < sequence.size(); i++) {
 	    			 ArrayList<String> next_itemset = sequence.get(i);
+
 	    			 for (int j = 0; j < next_itemset.size(); j++) {
 	    			     String next_item = next_itemset.get(j);
 	    			     //判斷是否交錯
@@ -504,15 +514,15 @@ public class wekaTest {
 	    	 }
 	    	
 	    	 
-	     }*/
-	     /*
+	     }
+	     
 	     System.out.println("Interaction: " + (inter/(double) result.size()) );
-	     System.out.println("1: " + (inter1/(double) result.size()) );
-	     System.out.println("2: " + (inter2/(double)  inter) );
-	     System.out.println("3: " + (inter3/(double)  inter) );
+//	     System.out.println("1: " + (inter1/(double) result.size()) );
+//	     System.out.println("2: " + (inter2/(double)  inter) );
+//	     System.out.println("3: " + (inter3/(double)  inter) );
 	     sc.close();
-	     */
-	     System.out.println("After reducing: " + result.size());
+	     
+//	     System.out.println("After reducing: " + result.size());
 	     return result;
 	        
 	}	

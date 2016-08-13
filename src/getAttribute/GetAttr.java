@@ -812,16 +812,16 @@ public class GetAttr {
     	int index_of_target_att = records.get(0).size()-1;
     	for (int i = 1; i < records.size(); i++) {
     	    if (i==1) {
-    	    	result.put(i, "Rise"); 
+    	    	result.put(i, "100"); 
     	    	continue;
     	    }
 //    	    System.out.println(i);
 //    	    System.out.println(Double.parseDouble(records.get(i).get(index_of_target_att)));
     	   
     	    if (Double.parseDouble(records.get(i).get(index_of_target_att))- Double.parseDouble(records.get(i-1).get(index_of_target_att)) >= 0 ) {
-    	    	result.put(i, "Rise");     
+    	    	result.put(i, "100");     
     	    } else {
-    	    	result.put(i, "Down");  
+    	    	result.put(i, "200");  
     	    }	
     	}    	  
     	return result;  
